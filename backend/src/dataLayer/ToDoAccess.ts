@@ -1,14 +1,15 @@
 import * as AWS from "aws-sdk";
+import * as AWSXray from "aws-xray-sdk"; //imported AWS Xray SDK
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Types } from 'aws-sdk/clients/s3';
 import { TodoItem } from "../models/TodoItem";
 import { TodoUpdate } from "../models/TodoUpdate";
 
-
+const XAWS = AWSXray.captureAWS(AWS) //added the captureAWS method for all interactions with AWS services
 export class ToDoAccess {
     constructor(
-        private readonly docClient: DocumentClient = new AWS.DynamoDB.DocumentClient(),
-        private readonly s3Client: Types = new AWS.S3({ signatureVersion: 'v4' }),
+        private readonly docClient: DocumentClient = new XAWS.DynamoDB.DocumentClient(),//updated to XAWS
+        private readonly s3Client: Types = new XAWS.S3({ signatureVersion: 'v4' }),//updated to XAWS
         private readonly todoTable = process.env.TODOS_TABLE,
         private readonly s3BucketName = process.env.S3_BUCKET_NAME) {
     }
